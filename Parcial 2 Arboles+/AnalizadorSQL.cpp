@@ -38,16 +38,15 @@ void AnalizadorSQL::analizarDDL(string consulta, string comando) {
     if (comando == "CREATE") {
         if (consultaUpper.find("INDEX") != string::npos) {
             if (!indiceSecundario) {
-                // Instancia el indice dentro de la carpeta Parcial 2 Arboles+
-                indiceSecundario = new ArbolBPlus(3, "Parcial 2 Arboles+/indice_secundario.txt");
+                indiceSecundario = new ArbolBPlus(3, "indice_secundario.txt");
             }
-            cout << "[OK] Indice secundario instanciado en memoria (Parcial 2 Arboles+).\n";
+            cout << "[OK] Indice secundario instanciado en memoria.\n";
         } else if (consultaUpper.find("TABLE") != string::npos) {
             cout << "[OK] Tabla lista para operar.\n";
         }
     } else if (comando == "DROP") {
         bd->limpiar();
-        remove("Parcial 2 Arboles+/base_datos.txt");
+        remove("base_datos.txt");
         cout << "[OK] Tabla y datos eliminados en disco y RAM.\n";
     }
 }
@@ -68,8 +67,13 @@ void AnalizadorSQL::analizarDQL_DML(string consulta, string comando) {
                     getline(ss, datos);
                     try {
                         int id = stoi(strId);
-                        size_t posComa = datos.find_first_not_of(" ");
-                        if (posComa != string::npos) datos = datos.substr(posComa);
+                        
+                        // Eliminar espacios iniciales/finales y comillas simples o dobles
+                        size_t inicio = datos.find_first_not_of(" '\"");
+                        size_t fin = datos.find_last_not_of(" '\"");
+                        if (inicio != string::npos && fin != string::npos) {
+                            datos = datos.substr(inicio, fin - inicio + 1);
+                        }
 
                         bd->insertar(id, datos);
                         cout << "[OK] Registro con ID " << id << " insertado correctamente.\n";
@@ -125,7 +129,6 @@ void AnalizadorSQL::mostrarAyuda() {
     const string RESET = "\033[0m";
     const string BOLD_YELLOW = "\033[1;33m";
     const string BOLD_CYAN = "\033[1;36m";
-    const string BOLD_GREEN = "\033[1;32m";
     const string BOLD_WHITE = "\033[1;37m";
 
     cout << BOLD_YELLOW << "\n=== Sistema Gestor SQL basado en Arboles B+ ===" << RESET << "\n";
