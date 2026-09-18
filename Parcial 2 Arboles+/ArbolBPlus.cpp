@@ -210,7 +210,7 @@ void ArbolBPlus::guardarEnArchivo() {
 
     vector<Registro> todos = obtenerTodos();
     for (const auto& reg : todos) {
-        archivo << reg.serializar() << "\n";
+        archivo << reg.clave << "," << reg.datos << "\n";
     }
     archivo.close();
 }
@@ -228,6 +228,12 @@ void ArbolBPlus::cargarDesdeArchivo() {
         if (getline(ss, tempClave, ',') && getline(ss, datos)) {
             try {
                 int clave = stoi(tempClave);
+                // Limpieza de espacios y comillas al cargar desde disco
+                size_t inicio = datos.find_first_not_of(" '\"");
+                size_t fin = datos.find_last_not_of(" '\"");
+                if (inicio != string::npos && fin != string::npos) {
+                    datos = datos.substr(inicio, fin - inicio + 1);
+                }
                 insertar(clave, datos);
             } catch (...) {}
         }
