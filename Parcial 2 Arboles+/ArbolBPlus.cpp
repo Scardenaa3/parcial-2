@@ -5,6 +5,7 @@ ArbolBPlus::ArbolBPlus(int _grado, string _nombre_archivo)
 
 ArbolBPlus::~ArbolBPlus() {
     liberarMemoria(raiz);
+    raiz = nullptr;
 }
 
 void ArbolBPlus::liberarMemoria(NodoBPlus* nodo) {
@@ -228,7 +229,6 @@ void ArbolBPlus::cargarDesdeArchivo() {
         if (getline(ss, tempClave, ',') && getline(ss, datos)) {
             try {
                 int clave = stoi(tempClave);
-                // Limpieza de espacios y comillas al cargar desde disco
                 size_t inicio = datos.find_first_not_of(" '\"");
                 size_t fin = datos.find_last_not_of(" '\"");
                 if (inicio != string::npos && fin != string::npos) {
