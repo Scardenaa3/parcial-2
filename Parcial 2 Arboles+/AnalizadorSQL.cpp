@@ -54,7 +54,7 @@ void AnalizadorSQL::analizarDDL(string consulta, string comando) {
 void AnalizadorSQL::analizarDQL_DML(string consulta, string comando) {
     string consultaUpper = aMayusculas(consulta);
 
-    if (comando == "INSERT") {
+   if (comando == "INSERT") {
         size_t posValues = consultaUpper.find("VALUES");
         if (posValues != string::npos) {
             size_t parentesisIzq = consulta.find('(', posValues);
@@ -68,6 +68,12 @@ void AnalizadorSQL::analizarDQL_DML(string consulta, string comando) {
                     try {
                         int id = stoi(strId);
                         
+                        // VALIDACIÓN DE DUPLICADOS: Verificar si el ID ya existe
+                        if (!bd->buscar(id).empty()) {
+                            cout << "Error: El registro con ID " << id << " ya existe en la base de datos.\n";
+                            return;
+                        }
+
                         // Eliminar espacios iniciales/finales y comillas simples o dobles
                         size_t inicio = datos.find_first_not_of(" '\"");
                         size_t fin = datos.find_last_not_of(" '\"");
@@ -83,7 +89,7 @@ void AnalizadorSQL::analizarDQL_DML(string consulta, string comando) {
                 }
             }
         }
-    } 
+    }
     else if (comando == "SELECT") {
         if (consultaUpper.find("WHERE") != string::npos) {
             size_t posIgual = consulta.find('=');
