@@ -1,4 +1,4 @@
-# 🗄️ Parcial 2: Motor de Base de Datos SQL (Árboles B+)
+# Parcial 2: Motor de Base de Datos SQL (Árboles B+)
 
 Este repositorio contiene la especificación, arquitectura y código fuente completo del **Motor de Base de Datos SQL** desarrollado en **C++17 / C++11**. El sistema utiliza un **Árbol B+ (Grado 3)** para la indexación eficiente de datos en memoria RAM y cuenta con persistencia de archivos en disco.
 
