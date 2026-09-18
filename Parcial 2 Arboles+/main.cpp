@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    string rutaArchivo = "base_datos.txt";
+    const string rutaArchivo = "base_datos.txt";
     ArbolBPlus arbolBD(3, rutaArchivo);
     
     // Carga los registros del archivo al árbol en RAM
@@ -36,7 +36,6 @@ int main(int argc, char* argv[]) {
 
         if (consulta.empty()) continue;
 
-        // Normalización para verificar salida insensible a mayúsculas/minúsculas
         string testExit = consulta;
         transform(testExit.begin(), testExit.end(), testExit.begin(), ::toupper);
 
