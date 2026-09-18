@@ -1,12 +1,12 @@
 # Especificación del Parcial 2: Motor de Base de Datos SQL (Árboles B+)
 
-Este documento establece los requerimientos, la arquitectura y los detalles de implementación del Motor de Base de Datos SQL basado en Árboles B+.
+Este documento establece los requerimientos, la arquitectura, los detalles de implementación y las guías de uso del Motor de Base de Datos SQL desarrollado en C++11, basado en una estructura de indexación por **Árboles B+** (Grado 3) con persistencia en disco.
 
 ---
 
 ## 1. Resumen de la Implementación
 
-Se completó el desarrollo del motor de base de datos en C++, integrando la capa de parsing SQL con la estructura de datos persistente basada en Árboles B+.
+Se completó el desarrollo del motor de base de datos en C++, integrando la capa de parsing SQL y menú interactivo con la estructura de datos persistente basada en Árboles B+.
 
 ### Aspectos Clave Desarrollados:
 * **Estructura del Árbol B+ (`ArbolBPlus`):**
@@ -16,10 +16,11 @@ Se completó el desarrollo del motor de base de datos en C++, integrando la capa
   * Búsqueda logarítmica descendente $O(\log N)$ desde la raíz hacia las hojas.
 * **Analizador Léxico y Sintáctico (`AnalizadorSQL`):**
   * Procesamiento de comandos DDL (`CREATE TABLE`, `CREATE INDEX`, `DROP TABLE`).
-  * Procesamiento de comandos DML y DQL (`INSERT INTO`, `SELECT *`, `SELECT WHERE`).
+  * Procesamiento de comandos DML y DQL (`INSERT INTO`, `SELECT *`, `SELECT WHERE`, `DELETE`).
+  * **Modo Interactivo Simplificado (1-9):** Mapeo de opciones numéricas para captura asistida de datos sin necesidad de redactar sentencias SQL largas.
   * Sincronización de índices secundarios mediante la instanciación de un segundo Árbol B+ mapeado a la clave primaria.
 * **Persistencia de Datos:**
-  * Métodos de serialización y deserialización para guardar y recuperar el estado de los datos en el archivo físico `base_datos.txt`.
+  * Métodos de serialización y deserialización para guardar y recuperar el estado de los datos en archivos físicos en disco.
 
 ---
 
@@ -29,9 +30,9 @@ El proyecto está diseñado bajo una separación de responsabilidades en tres ca
 
 ```mermaid
 flowchart TD
-    A[Interfaz CLI - main.cpp] -->|Instrucción en texto| B(Parser SQL - AnalizadorSQL)
+    A[Interfaz CLI - main.cpp] -->|Comando o Selección 1-9| B(Parser SQL / Menú - AnalizadorSQL)
     B -->|DDL: CREATE/DROP| C{Controlador B+}
     B -->|DML: INSERT/DELETE| C
     B -->|DQL: SELECT| C
     C <-->|Manejo de Nodos| D[(Estructura B+ en RAM - ArbolBPlus)]
-    D <-->|Serialización / Deserialización| E[Persistencia: base_datos.txt]
+    D <-->|Serialización / Deserialización| E[Persistencia: Parcial 2 Arboles+/base_datos.txt]
