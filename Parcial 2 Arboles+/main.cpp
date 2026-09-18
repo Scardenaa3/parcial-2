@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include "ArbolBPlus.h"
 #include "AnalizadorSQL.h"
 
@@ -16,27 +17,31 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    cout << "Inicializando Base de Datos con Arbol B+ (Grado 3) en 'Parcial 2 Arboles+'...\n";
+    string rutaArchivo = "base_datos.txt";
+    ArbolBPlus arbolBD(3, rutaArchivo);
     
-    // Asigna la ruta directa a la carpeta del examen
-    ArbolBPlus arbolBD(3, "Parcial 2 Arboles+/base_datos.txt");
-    
+    // Carga los registros del archivo al árbol en RAM
     arbolBD.cargarDesdeArchivo();
 
     AnalizadorSQL analizador(&arbolBD);
 
     string consulta;
+    cout << "Inicializando Base de Datos con Arbol B+ (Grado 3)...\n";
     cout << "\n[Consola SQL Arbol B+ - PARCIAL 2]\n";
     cout << "Escriba 'HELP' para ver los comandos, 'EXIT' para salir.\n";
 
     while (true) {
         cout << "sql> ";
-        getline(cin, consulta);
+        if (!getline(cin, consulta)) break;
 
         if (consulta.empty()) continue;
 
-        if (consulta == "EXIT" || consulta == "exit" || consulta == "quit") {
-            cout << "Guardando cambios en 'Parcial 2 Arboles+/base_datos.txt' y saliendo...\n";
+        // Normalización para verificar salida insensible a mayúsculas/minúsculas
+        string testExit = consulta;
+        transform(testExit.begin(), testExit.end(), testExit.begin(), ::toupper);
+
+        if (testExit == "EXIT" || testExit == "QUIT") {
+            cout << "Guardando cambios en '" << rutaArchivo << "' y saliendo...\n";
             arbolBD.guardarEnArchivo();
             break;
         }
