@@ -4,30 +4,28 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <algorithm>
 #include <vector>
 #include "ArbolBPlus.h"
 
 using namespace std;
 
-/**
- * @class AnalizadorSQL
- * Procesa las cadenas de texto SQL e invoca los metodos del Arbol B+.
- */
 class AnalizadorSQL {
 private:
     ArbolBPlus* bd;
     ArbolBPlus* indiceSecundario;
+    bool tablaCreada;
 
     string aMayusculas(string cadena);
+    void analizarDDL(string consulta, string comando);
+    void analizarDQL_DML(string consulta, string comando);
 
 public:
     AnalizadorSQL(ArbolBPlus* base_datos);
     ~AnalizadorSQL();
 
     void ejecutarConsulta(string consulta);
-    void analizarDDL(string consulta, string comando);
-    void analizarDQL_DML(string consulta, string comando);
     void mostrarAyuda();
 };
 
-#endif // ANALIZADOR_SQL_H
+#endif
