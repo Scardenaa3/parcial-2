@@ -1,6 +1,6 @@
-# Especificación del Parcial 2: Motor de Base de Datos SQL (Árboles B+)
+# Parcial 2: Motor de Base de Datos SQL (Árboles B+)
 
-Este documento establece los requerimientos, la arquitectura, los detalles de implementación y la guía para cualquier usuario que descargue, evalúe y ejecute este Motor de Base de Datos SQL desarrollado en C++11, basado en una estructura de indexación por **Árboles B+** (Grado 3) con persistencia en disco.
+Este repositorio contiene la especificación, arquitectura y código fuente completo del **Motor de Base de Datos SQL** desarrollado en **C++17 / C++11**. El sistema utiliza un **Árbol B+ (Grado 3)** para la indexación eficiente de datos en memoria RAM y cuenta con persistencia de archivos en disco.
 
 ---
 
@@ -19,7 +19,11 @@ Se completó el desarrollo del motor de base de datos en C++, integrando la capa
   * Procesamiento de comandos DML y DQL (`INSERT INTO`, `SELECT *`, `SELECT WHERE`, `DELETE`).
   * Sincronización de índices secundarios mediante la instanciación de un segundo Árbol B+ mapeado a la clave primaria.
 * **Persistencia de Datos:**
-  * Métodos de serialización y deserialización para guardar y recuperar el estado de los datos en el archivo físico `Parcial 2 Arboles+/base_datos.txt`.
+  * Métodos de serialización y deserialización para guardar y recuperar el estado de los datos en el archivo físico `base_datos.txt`.
+* **Manejo de Errores y Gestión de Memoria:**
+  * **Solución de corrupción de memoria (`free(): invalid pointer`):** Aseguramiento de la integridad de cadenas y punteros al cerrar la aplicación.
+  * **Validación de tabla:** Exige la creación explícita de la tabla antes de realizar operaciones DML/DQL.
+  * **Validación de duplicados y estado:** Bloqueo de inserciones con `id` existente y notificaciones informativas ante tablas vacías.
 
 ---
 
@@ -34,4 +38,4 @@ flowchart TD
     B -->|DML: INSERT/DELETE| C
     B -->|DQL: SELECT| C
     C <-->|Manejo de Nodos| D[(Estructura B+ en RAM - ArbolBPlus)]
-    D <-->|Serialización / Deserialización| E[Persistencia: Parcial 2 Arboles+/base_datos.txt]
+    D <-->|Serialización / Deserialización| E[Persistencia: base_datos.txt]
