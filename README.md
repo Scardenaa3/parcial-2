@@ -1,37 +1,54 @@
-# Especificación del Parcial 2: Motor de Base de Datos SQL (Árboles B+)
+# 🗄️ Sistema Gestor de Base de Datos SQL (Motor Árbol B+)
 
-Este documento establece los requerimientos, la arquitectura, los detalles de implementación y la guía para cualquier usuario que descargue, evalúe y ejecute este Motor de Base de Datos SQL desarrollado en C++11, basado en una estructura de indexación por **Árboles B+** (Grado 3) con persistencia en disco.
-
----
-
-## 1. Resumen de la Implementación
-
-Se completó el desarrollo del motor de base de datos en C++, integrando la capa de parsing SQL directo con la estructura de datos persistente basada en Árboles B+.
-
-### Aspectos Clave Desarrollados:
-* **Estructura del Árbol B+ (`ArbolBPlus`):**
-  * Implementación manual de nodos internos y hojas mediante punteros C++.
-  * Algoritmo de inserción ordenada con división (*split*) de nodos y promoción ascendente de claves hacia los nodos padres.
-  * Conexión secuencial entre nodos hoja (`siguiente_hoja`) para soporte eficiente de consultas de rango e inspección completa (*Full Table Scan*).
-  * Búsqueda logarítmica descendente $O(\log N)$ desde la raíz hacia las hojas.
-* **Analizador Léxico y Sintáctico (`AnalizadorSQL`):**
-  * Procesamiento sintáctico de comandos DDL (`CREATE TABLE`, `CREATE INDEX`, `DROP TABLE`).
-  * Procesamiento de comandos DML y DQL (`INSERT INTO`, `SELECT *`, `SELECT WHERE`, `DELETE`).
-  * Sincronización de índices secundarios mediante la instanciación de un segundo Árbol B+ mapeado a la clave primaria.
-* **Persistencia de Datos:**
-  * Métodos de serialización y deserialización para guardar y recuperar el estado de los datos en el archivo físico `Parcial 2 Arboles+/base_datos.txt`.
+Este proyecto es una implementación de un **Motor de Base de Datos y Analizador SQL en C++17** respaldado por la estructura de datos de un **Árbol B+ (Grado 3)** para almacenamiento indexado en memoria RAM y persistencia en disco.
 
 ---
 
-## 2. Arquitectura del Sistema
+## 🚀 Características Principales
 
-El proyecto está diseñado bajo una separación de responsabilidades en tres capas principales:
+* **Estructura Árbol B+ (Grado 3):** Búsqueda, inserción y eliminación eficiente con punteros entre nodos hoja para recorridos secuenciales rápidos.
+* **Analizador SQL Interactivo:** Interfaz por consola CLI capaz de parsear e interpretar sentencias DDL, DQL y DML.
+* **Persistencia de Datos:** Carga automática desde `base_datos.txt` al iniciar y guardado de estado al salir con el comando `EXIT`.
+* **Validación Rigurosa de Errores y Memoria:**
+  * Control de acceso seguro a punteros en C++ (prevención de `free(): invalid pointer`).
+  * Validación de existencia de tabla (exige un `CREATE TABLE` antes de manipular registros).
+  * Control de duplicados en clave primaria (`id`).
+  * Mensajes informativos para tablas vacías o consultas sin coincidencia.
 
-```mermaid
-flowchart TD
-    A[Interfaz CLI - main.cpp] -->|Comando SQL| B(Parser SQL - AnalizadorSQL)
-    B -->|DDL: CREATE/DROP| C{Controlador B+}
-    B -->|DML: INSERT/DELETE| C
-    B -->|DQL: SELECT| C
-    C <-->|Manejo de Nodos| D[(Estructura B+ en RAM - ArbolBPlus)]
-    D <-->|Serialización / Deserialización| E[Persistencia: Parcial 2 Arboles+/base_datos.txt]
+---
+
+## 🛠️ Comandos SQL Soportados
+
+### 1. Definición de Datos (DDL)
+| Comando | Descripción |
+| :--- | :--- |
+| `CREATE TABLE usuarios (id INT, nombre STR)` | Habilita la tabla para operar en la sesión. |
+| `CREATE INDEX idx_nombre ON usuarios (nombre)` | Instancia la estructura del índice secundario. |
+| `DROP TABLE usuarios` | Limpia los registros en RAM y elimina el archivo `base_datos.txt`. |
+
+### 2. Manipulación y Consulta (DML / DQL)
+| Comando | Descripción |
+| :--- | :--- |
+| `INSERT INTO usuarios VALUES (id, 'nombre')` | Inserta un nuevo registro verificando que el `id` no esté duplicado. |
+| `SELECT * FROM usuarios` | Muestra todos los registros guardados. |
+| `SELECT * FROM usuarios WHERE id = X` | Búsqueda indexada directa por clave primaria `id`. |
+| `DELETE FROM usuarios WHERE id = X` | Elimina un registro por `id`. |
+
+### 3. Comandos Generales
+| Comando | Descripción |
+| :--- | :--- |
+| `HELP` | Muestra la guía interactiva con la sintaxis de comandos. |
+| `EXIT` / `QUIT` | Guarda las modificaciones en `base_datos.txt` y finaliza la ejecución. |
+
+---
+
+## 💻 Compilación y Ejecución (Linux / WSL)
+
+Para compilar el proyecto utilizando `g++` en un entorno de **Linux** o **Windows Subsystem for Linux (WSL)**:
+
+```bash
+# Compilar todos los archivos fuentes en C++17
+g++ -std=c++17 -Wall main.cpp ArbolBPlus.cpp AnalizadorSQL.cpp -o bd_sql
+
+# Ejecutar el motor de base de datos
+./bd_sql
